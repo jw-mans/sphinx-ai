@@ -1,0 +1,264 @@
+# --------------------- #
+#  Python / FastAPI     #
+# --------------------- #
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pyenv
+.python-version
+
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Alembic (но не миграции, если они генерируются, а не хранятся)
+alembic/versions/__pycache__/
+
+# --------------------- #
+#  React / Node         #
+# --------------------- #
+
+# Node modules
+node_modules/
+
+# Build output
+build/
+dist/
+.cache/
+.parcel-cache/
+
+# React environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# NPM / Yarn logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE / Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# --------------------- #
+#  Docker               #
+# --------------------- #
+
+# Docker volumes (если вы монтируете их локально)
+docker/volumes/
+volumes/
+postgres_data/
+redis_data/
+
+# Docker Compose override files (содержат локальные секреты)
+docker-compose.override.yml
+docker-compose.*.override.yml
+docker-compose.local.yml
+
+# --------------------- #
+#  Kafka (опционально)  #
+# --------------------- #
+
+# Логи Kafka (если запускаете локально в volumes)
+/kafka/logs/
+/kafka/data/
+/kafka/temp/
+
+# Конфиги с секретами для Kafka
+client_ssl_config/
+jaas_config/
+
+# --------------------- #
+#  Kubernetes (опц)     #
+# --------------------- #
+
+# Секреты (особенно если не используете sealed-secrets или external-secrets)
+*.secret.yaml
+*.secret.yml
+secrets/
+**/secrets.yaml
+
+# Kustomize generated файлы
+*.gen.yaml
+*.gen.yml
+
+# Helm (результат шаблонизации, сгенерированные чарты)
+*.tgz
+/charts/*.tgz
+requirements.lock
+Chart.lock
+
+# K3s / K8s local config
+kubeconfig
+.kubeconfig
+
+# --------------------- #
+#  Env & Secrets        #
+# --------------------- #
+
+# Environment variables (кроме примера)
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Docker secrets (локальные)
+.docker/secrets/
+/secrets/
+
+# Any key files
+*.key
+*.pem
+*.crt
+*.p12
+*.der
+*.p8
+
+# --------------------- #
+#  OS / IDE / Misc      #
+# --------------------- #
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# Visual Studio Code (расширенный)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Sublime Text
+*.sublime-workspace
+
+# IntelliJ / PyCharm
+.idea/
+*.iml
+out/
+.idea_modules/
+
+# --------------------- #
+#  Logs & Temp          #
+# --------------------- #
+
+# Logs
+logs/
+*.log
+log/
+*.pid
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.cache
+
+# --------------------- #
+#  Application-specific #
+# --------------------- #
+
+# Uploads / media (если есть)
+media/
+uploads/
+staticfiles/
+static/
+
+# Reports
+reports/
+test-reports/
+
+# Database local (если вдруг sqlite)
+*.db
+*.sqlite
+*.sqlite3
+
+# --------------------- #
+#  Опционально: для CI  #
+# --------------------- #
+# (Если используете Jenkins, GitLab CI, GitHub Actions локально)
+*.pipeline.local
