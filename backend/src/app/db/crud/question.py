@@ -10,8 +10,12 @@ from src.app.schemas.question import QuestionCreate, QuestionUpdate
 async def create_question(db: AsyncSession, question: QuestionCreate) -> Question:
     db_question = Question(**question.dict())
     db.add(db_question)
-    await db.commit()
-    await db.refresh(db_question)
+    try:
+        await db.commit()
+        await db.refresh(db_question)
+    except Exception:
+        await db.rollback()
+        raise
     return db_question
 
 
@@ -33,11 +37,19 @@ async def update_question(db: AsyncSession, question_id: int, question_update: Q
             .where(Question.id == question_id)
             .values(**update_data)
         )
-        await db.commit()
+        try:
+            await db.commit()
+        except Exception:
+            await db.rollback()
+            raise
     return await get_question(db, question_id)
 
 
 async def delete_question(db: AsyncSession, question_id: int) -> bool:
     result = await db.execute(delete(Question).where(Question.id == question_id))
-    await db.commit()
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
     return result.rowcount > 0

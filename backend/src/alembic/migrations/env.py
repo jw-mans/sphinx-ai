@@ -1,10 +1,16 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parents[3]))
+
 from src.app.config import settings
 from src.app.db.base import Base
 
-# ПРИ СОЗДАНИИ НОВЫХ ТАБЛИЦ / МОДЕЛЕЙ НЕ ЗАБУДЬТЕ ИМПОРТИРОВАТЬ ИХ В  
-# ЭТОТ ФАЙЛ, ЧТОБЫ ALEMBIC МОГ ОБНАРУЖИТЬ ИХ ПРИ ГЕНЕРАЦИИ МИГРАЦИЙ,
-# ИСПОЛЬЗУЙТЕ КОММЕНТАРИЙ "# noqa" ДЛЯ ИГНОРИРОВАНИЯ ПРЕДУПРЕЖДЕНИЙ О 
-# НЕИСПОЛЬЗУЕМЫХ ИМПОРТАХ
+from src.app.db.models.answer import *  # noqa
+from src.app.db.models.question import *  # noqa
+from src.app.db.models.evaluation import * # noqa
+from src.app.db.models.user import * # noqa
+from src.app.db.models.interview import * # noqa
 
 from logging.config import fileConfig
 
@@ -22,7 +28,7 @@ config.set_main_option("sqlalchemy.url",
     settings.DB_URL + "?async_fallback=True"
 )
 
-target_metadata = Base.metadata.tables
+target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")

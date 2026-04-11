@@ -9,6 +9,9 @@ __pycache__/
 *.so
 .Python
 
+# AI agents configuration files
+.claude/
+
 # Distribution / packaging
 .Python
 build/

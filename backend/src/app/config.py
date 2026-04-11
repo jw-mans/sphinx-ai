@@ -3,8 +3,10 @@ from pydantic_settings import (
     SettingsConfigDict,
 )
 from pathlib import Path
+from typing import Optional
 
-BASE_DIR = Path(__file__).resolve().parents[3]
+BASE_DIR = Path(__file__).resolve().parents[2]
+ROOT_DIR = Path(__file__).resolve().parents[3]
 
 class Settings(BaseSettings):
     DB_USER: str
@@ -26,6 +28,10 @@ class Settings(BaseSettings):
     YANDEX_API_MODEL_URI: str
     YANDEX_CLOUD_CATALOG_ID: str
 
+    BOT_TOKEN: Optional[str] = None
+    WEBAPP_URL: Optional[str] = None
+    FRONTEND_URL: Optional[str] = None
+
     UPLOAD_DIR: Path = BASE_DIR / 'storage' / 'uploads'
     VECTOR_DB_DIR: Path = BASE_DIR / 'storage' / 'vector_db'
     
@@ -38,7 +44,7 @@ class Settings(BaseSettings):
         return f'gpt://{self.YANDEX_CLOUD_CATALOG_ID}/yandexgpt/rc'
 
     model_config = SettingsConfigDict(
-        env_file=BASE_DIR / '.env',
+        env_file=ROOT_DIR / '.env',
         extra='ignore',
     )
 

@@ -7,21 +7,34 @@ from src.app.db.models import Evaluation
 from src.app.schemas.evaluation import EvaluationCreate, EvaluationUpdate
 
 
-async def create_evaluation(db: AsyncSession, evaluation: EvaluationCreate) -> Evaluation:
+async def create_evaluation(
+    db: AsyncSession, 
+    evaluation: EvaluationCreate
+) -> Evaluation:
     db_evaluation = Evaluation(**evaluation.dict())
     db.add(db_evaluation)
-    await db.commit()
-    await db.refresh(db_evaluation)
+    try:
+        await db.commit()
+        await db.refresh(db_evaluation)
+    except Exception:
+        await db.rollback()
+        raise
     return db_evaluation
 
 
 async def get_evaluation(db: AsyncSession, evaluation_id: int) -> Optional[Evaluation]:
-    result = await db.execute(select(Evaluation).where(Evaluation.id == evaluation_id))
+    result = await db.execute(
+        select(Evaluation)
+        .where(Evaluation.id == evaluation_id)
+    )
     return result.scalars().first()
 
 
 async def get_evaluations_by_answer(db: AsyncSession, answer_id: int) -> List[Evaluation]:
-    result = await db.execute(select(Evaluation).where(Evaluation.answer_id == answer_id))
+    result = await db.execute(
+        select(Evaluation)
+        .where(Evaluation.answer_id == answer_id)
+    )
     return result.scalars().all()
 
 
@@ -33,11 +46,22 @@ async def update_evaluation(db: AsyncSession, evaluation_id: int, evaluation_upd
             .where(Evaluation.id == evaluation_id)
             .values(**update_data)
         )
-        await db.commit()
+        try:
+            await db.commit()
+        except Exception:
+            await db.rollback()
+            raise
     return await get_evaluation(db, evaluation_id)
 
 
 async def delete_evaluation(db: AsyncSession, evaluation_id: int) -> bool:
-    result = await db.execute(delete(Evaluation).where(Evaluation.id == evaluation_id))
-    await db.commit()
+    result = await db.execute(
+        delete(Evaluation)
+        .where(Evaluation.id == evaluation_id)
+    )
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
     return result.rowcount > 0

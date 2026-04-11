@@ -7,6 +7,7 @@ class InterviewBase(BaseModel):
     level: str
     stack: str
     status: Optional[str] = "active"
+    user_notes: Optional[str] = None
 
 
 class InterviewCreate(InterviewBase):

@@ -1,93 +1,153 @@
-# Sphinx 
+# Sphinx
 
+AI-ассистент для подготовки к техническому интервью. Telegram Web App (TWA): задаёт вопросы по выбранному стеку и уровню, оценивает ответы через LLM, даёт обратную связь и итоговое саммари.
 
+---
 
-## Getting started
+## Стек
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+**Backend** — FastAPI + SQLAlchemy (async) + PostgreSQL + Alembic + YandexGPT (через OpenAI-compatible API)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+**Frontend** — React + TypeScript + Vite + Tailwind CSS + TMA SDK (Telegram Mini Apps)
 
-## Add your files
+---
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Структура проекта
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/toothless-bums/sphinx.git
-git branch -M main
-git push -uf origin main
+sphinx/
+├── backend/
+│   └── src/app/
+│       ├── api/routers/        # FastAPI роутеры
+│       ├── core/               # LLM клиенты
+│       ├── db/                 # модели, crud, сессия
+│       ├── services/           # бизнес-логика
+│       ├── schemas/            # Pydantic схемы
+│       └── config.py           # настройки из .env
+└── frontend/
+    └── src/
+        ├── api/                # HTTP-клиент (interview.ts)
+        ├── components/         # UI компоненты
+        ├── hooks/              # useInterview, useTelegramUser
+        └── pages/              # HomePage, InterviewPage, ResultPage
 ```
 
-## Integrate with your tools
+---
 
-* [Set up project integrations](https://gitlab.com/toothless-bums/sphinx/-/settings/integrations)
+## Переменные окружения
 
-## Collaborate with your team
+Файл `.env` в корне проекта (рядом с `backend/`):
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```env
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+DB_HOST=
+DB_PORT=
 
-## Test and Deploy
+YANDEX_API_KEY=          # API-ключ YandexGPT
+YANDEX_API_KEY_ID=       # ID ключа (для service account)
+YANDEX_API_MODEL_URI=    # URI модели
+YANDEX_CLOUD_CATALOG_ID= # ID каталога в Yandex Cloud
 
-Use the built-in continuous integration in GitLab.
+BOT_TOKEN=               # Telegram Bot токен (опционально)
+WEBAPP_URL=              # URL TWA
+FRONTEND_URL=            # URL фронтенда
+```
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+Переменная окружения фронтенда — `VITE_API_URL` в `frontend/.env`:
 
-***
+```env
+VITE_API_URL=http://localhost:8000
+```
 
-# Editing this README
+---
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Запуск
 
-## Suggestions for a good README
+**Backend:**
+```bash
+cd backend
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn src.app.main:app --reload
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+**Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Name
-Choose a self-explaining name for your project.
+---
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## API эндпоинты
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Пользователи
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+| Метод | Путь | Описание |
+|-------|------|----------|
+| POST | `/users` | Get-or-create пользователь по `telegram_id` |
+| GET | `/users/{user_id}` | Получить пользователя по внутреннему ID |
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Интервью (v1 — стандартная генерация)
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+| Метод | Путь | Описание |
+|-------|------|----------|
+| POST | `/interview/start` | Создать интервью, получить первый вопрос |
+| GET | `/interview/{id}/question` | Получить текущий вопрос |
+| POST | `/interview/{id}/answer` | Отправить ответ, получить оценку |
+| GET | `/interview/{id}/result` | Итоги сессии |
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Интервью (v2 — адаптивная генерация)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+| Метод | Путь | Описание |
+|-------|------|----------|
+| GET | `/interview/{id}/question/v2` | Вопрос с адаптацией сложности + семантической дедупликацией |
+| POST | `/interview/{id}/answer/v2` | Оценка с калибровкой по running avg score |
+| GET | `/interview/{id}/result/v2` | Итоги с анализом тренда производительности |
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Фронт сейчас смотрит на v2. Чтобы переключиться обратно — раскомментировать старые строки в `frontend/src/api/interview.ts`.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+---
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Идентификация пользователей
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- В Telegram: `user.id` из TMA launch params → сохраняется как `telegram_id` в БД
+- В браузере (dev): генерируется анонимный ID, хранится в `localStorage` как `sphinx_anon_id`
+- Внутренний DB ID (`user.id`) кешируется в `localStorage` как `sphinx_user_id`
+- `POST /users` — idempotent: если `telegram_id` уже есть, возвращает существующего пользователя
 
-## License
-For open source projects, say how it is licensed.
+---
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## LLM клиенты
+
+В `backend/src/app/core/` два клиента с одинаковым интерфейсом:
+
+**`llm_client.py`** — оригинальный клиент. Простая генерация промптов, всё в одном user-сообщении.
+
+**`llm_client_new.py`** — улучшенный клиент (`LLMClientNew`). Используется v2 эндпоинтами.
+
+Отличия `LLMClientNew`:
+- **System/user role split** — системный промпт отделён от задачи на каждом вызове
+- **Embedding-based дедупликация** — после генерации вопроса считает косинусное сходство через Yandex Embeddings REST API; если > 0.87 с уже заданными — генерирует заново
+- **Адаптивная сложность** — если `avg_score >= 7.5`, в промпт добавляется инструкция усложнить; если `<= 4.5` — облегчить
+- **Ротация типов вопросов** — `conceptual → practical → debug → ...` по позиции вопроса в сессии
+- **Anchored scoring rubric** — явные якоря для каждого балла (9-10, 7-8, 5-6, 3-4, 1-2), исключают grade inflation
+- **Score trend в саммари** — сравнивает первую и вторую половины сессии, определяет динамику (улучшается / падает / стабильно)
+- **Retry на невалидный JSON** — при ошибке парсинга делает один дополнительный вызов с просьбой исправить JSON
+- **Pydantic-валидация** вывода LLM
+
+Эмбеддинги кешируются в памяти процесса. Если Yandex Embeddings API недоступен — fallback на текстовое сравнение.
+
+---
+
+## Страница результатов
+
+`/result/:interviewId` — одна страница, скролл сверху вниз:
+
+1. Общий балл + грейд (Отлично / Хорошо / Удовлетворительно / Нужно поработать)
+2. Средние баллы по 5 критериям (полоски)
+3. Итоговое саммари (overall + сильные стороны + слабые места + рекомендации)
+4. Разбор по каждому вопросу (вопрос → балл → фидбек → weak topic теги)
