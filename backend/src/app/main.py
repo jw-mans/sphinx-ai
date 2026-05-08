@@ -6,11 +6,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 
+from prometheus_fastapi_instrumentator import Instrumentator
+
 from src.app.api.routers import router as interview_router
 from src.app.db.base import Base
 from src.app.db.session import engine
 from src.app.exceptions import NotFoundError, ConflictError, LLMServiceError, DatabaseError
 from src.app.config import settings
+import src.app.metrics  # noqa: F401 — registers custom metrics on import
 
 
 logging.basicConfig(level=logging.INFO)
@@ -53,6 +56,9 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+# Prometheus HTTP metrics (latency, request counts, status codes)
+Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 _cors_origins = [settings.FRONTEND_URL] if settings.FRONTEND_URL else ["*"]
 app.add_middleware(

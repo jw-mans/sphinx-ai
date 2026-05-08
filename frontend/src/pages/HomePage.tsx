@@ -1,35 +1,27 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { InterviewStart } from '../components/InterviewStart'
-import { createUser, startInterview } from '../api/interview'
-import { resolveTelegramId, getTelegramUser } from '../hooks/useTelegramUser'
+import { startInterview } from '../api/interview'
+import type { UserOut } from '../api/auth'
 
-const USER_ID_KEY = 'sphinx_user_id'
+interface Props {
+  user: UserOut
+  onLogout: () => void
+}
 
-export function HomePage() {
+export function HomePage({ user, onLogout }: Props) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const tgUser = getTelegramUser()
+
+  const displayName = user.name ?? user.email ?? 'пользователь'
 
   const handleStart = async (level: string, stacks: string[], notes: string) => {
     setLoading(true)
     setError(null)
     try {
-      // Reuse stored user or create a new one
-      let userId: number
-      const storedId = localStorage.getItem(USER_ID_KEY)
-      if (storedId) {
-        userId = parseInt(storedId, 10)
-      } else {
-        const telegramId = resolveTelegramId()
-        const user = await createUser(telegramId)
-        userId = user.id
-        localStorage.setItem(USER_ID_KEY, String(userId))
-      }
-
       const stack = stacks.join(', ')
-      const interview = await startInterview(userId, level, stack, notes || undefined)
+      const interview = await startInterview(user.id, level, stack, notes || undefined)
       navigate(`/interview/${interview.interview_id}`, {
         state: { firstQuestion: interview.current_question },
       })
@@ -53,9 +45,7 @@ export function HomePage() {
           </div>
           <h1 className="text-3xl font-bold text-slate-100">Sphinx</h1>
           <p className="text-slate-400 mt-2 text-sm">
-            {tgUser
-              ? `Привет, ${tgUser.firstName}! Готов к собеседованию?`
-              : 'AI-ассистент для подготовки к техническому интервью'}
+            Привет, {displayName}! Готов к собеседованию?
           </p>
         </div>
 
@@ -70,6 +60,14 @@ export function HomePage() {
             {error}
           </div>
         )}
+
+        {/* Logout */}
+        <button
+          onClick={onLogout}
+          className="mt-6 w-full text-center text-xs text-slate-600 hover:text-slate-400 transition-colors"
+        >
+          Выйти из аккаунта
+        </button>
       </div>
     </div>
   )

@@ -3,21 +3,17 @@ from typing import Optional
 from datetime import datetime
 
 
-class UserBase(BaseModel):
+class UserCreate(BaseModel):
     telegram_id: str
-
-
-class UserCreate(UserBase):
-    pass
 
 
 class UserUpdate(BaseModel):
     telegram_id: Optional[str] = None
 
 
-class User(UserBase):
+class User(BaseModel):
     id: int
+    telegram_id: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}

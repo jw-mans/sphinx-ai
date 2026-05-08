@@ -9,3 +9,8 @@ pydantic-settings
 python-dotenv
 sqlalchemy
 uvicorn[standard]
+prometheus-client
+prometheus-fastapi-instrumentator
+bcrypt
+python-jose[cryptography]
+email-validator

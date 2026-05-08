@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.960" timestamp="2026-05-08T16:28:43.504390+03:00" hostname="DESKTOP-7NLRRKJ"><testcase classname="tests.test_health" name="test_health_ok" time="0.090"><error message="failed on setup with &quot;asyncpg.exceptions.ConnectionDoesNotExistError: connection was closed in the middle of operation&quot;">..\..\..\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py:485: in finish_recv
+    return ov.getresult()
+E   OSError: [WinError 64] Указанное сетевое имя более недоступно
+
+During handling of the above exception, another exception occurred:
+..\..\..\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py:282: in _loop_reading
+    length = fut.result()
+..\..\..\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py:817: in _poll
+    value = callback(transferred, key, ov)
+..\..\..\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py:489: in finish_recv
+    raise ConnectionResetError(*exc.args)
+E   ConnectionResetError: [WinError 64] Указанное сетевое имя более недоступно
+
+The above exception was the direct cause of the following exception:
+venv\lib\site-packages\pytest_asyncio\plugin.py:458: in setup
+    return super().setup()
+venv\lib\site-packages\pytest_asyncio\plugin.py:743: in pytest_fixture_setup
+    hook_result = yield
+venv\lib\site-packages\pytest_asyncio\plugin.py:313: in _asyncgen_fixture_wrapper
+    result = runner.run(setup(), context=context)
+venv\lib\site-packages\backports\asyncio\runner\runner.py:175: in run
+    return self._loop.run_until_complete(task)  # type: ignore[union-attr, no-any-return]
+..\..\..\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py:646: in run_until_complete
+    return future.result()
+..\..\..\AppData\Local\Programs\Python\Python310\lib\asyncio\futures.py:201: in result
+    raise self._exception
+..\..\..\AppData\Local\Programs\Python\Python310\lib\asyncio\tasks.py:234: in __step
+    result = coro.throw(exc)
+venv\lib\site-packages\pytest_asyncio\plugin.py:309: in setup
+    res = await gen_obj.__anext__()
+tests\conftest.py:60: in create_tables
+    async with engine.begin() as conn:
+..\..\..\AppData\Local\Programs\Python\Python310\lib\contextlib.py:199: in __aenter__
+    return await anext(self.gen)
+venv\lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+venv\lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+venv\lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+venv\lib\site-packages\sqlalchemy\engine\base.py:3293: in connect
+    return self._connection_cls(self)
+venv\lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+venv\lib\site-packages\sqlalchemy\engine\base.py:3317: in raw_connection
+    return self.pool.connect()
+venv\lib\site-packages\sqlalchemy\pool\base.py:448: in connect
+    return _ConnectionFairy._checkout(self)
+venv\lib\site-packages\sqlalchemy\pool\base.py:1272: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+venv\lib\site-packages\sqlalchemy\pool\base.py:712: in checkout
+    rec = pool._do_get()
+venv\lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+venv\lib\site-packages\sqlalchemy\util\langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+venv\lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+venv\lib\site-packages\sqlalchemy\pool\base.py:389: in _create_connection
+    return _ConnectionRecord(self)
+venv\lib\site-packages\sqlalchemy\pool\base.py:674: in __init__
+    self.__connect()
+venv\lib\site-packages\sqlalchemy\pool\base.py:900: in __connect
+    with util.safe_reraise():
+venv\lib\site-packages\sqlalchemy\util\langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+venv\lib\site-packages\sqlalchemy\pool\base.py:896: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+venv\lib\site-packages\sqlalchemy\engine\create.py:667: in connect
+    return dialect.connect(*cargs_tup, **cparams)
+venv\lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+venv\lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+venv\lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+venv\lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+venv\lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+venv\lib\site-packages\asyncpg\connect_utils.py:1102: in __connect_addr
+    await connected
+..\..\..\AppData\Local\Programs\Python\Python310\lib\asyncio\tasks.py:304: in __wakeup
+    future.result()
+E   asyncpg.exceptions.ConnectionDoesNotExistError: connection was closed in the middle of operation</error></testcase></testsuite></testsuites>

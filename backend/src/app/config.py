@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     WEBAPP_URL: Optional[str] = None
     FRONTEND_URL: Optional[str] = None
 
+    JWT_SECRET: str = "change-me-in-production"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRE_DAYS: int = 30
+
     UPLOAD_DIR: Path = BASE_DIR / 'storage' / 'uploads'
     VECTOR_DB_DIR: Path = BASE_DIR / 'storage' / 'vector_db'
     
