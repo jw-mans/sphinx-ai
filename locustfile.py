@@ -88,10 +88,7 @@ class SphinxUser(HttpUser):
     wait_time = between(1, 3)
     host = "http://localhost:8000"
 
-
-# ---------------------------------------------------------------------------
 # Print summary stats on quit
-# ---------------------------------------------------------------------------
 
 @events.quitting.add_listener
 def on_quitting(environment, **kwargs):

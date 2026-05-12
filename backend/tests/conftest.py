@@ -16,7 +16,7 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import NullPool, StaticPool
 
 from src.app.main import app
 from src.app.db.base import Base
@@ -25,9 +25,26 @@ from src.app.dependencies import get_llm_client, get_llm_client_new
 from src.app.config import settings
 
 
-# NullPool prevents connections from being tied to a specific event loop,
-# which avoids "Future attached to a different loop" with pytest-asyncio.
-_test_engine = create_async_engine(settings.DB_URL, poolclass=NullPool)
+# Allow overriding the DB for local development via TEST_DB_URL env var.
+# Defaults to an in-process SQLite database so tests run without a real
+# PostgreSQL instance.  In CI the DB service sets TEST_DB_URL to the
+# PostgreSQL URL (or keeps it unset and relies on settings.DB_URL).
+_TEST_DB_URL = os.environ.get("TEST_DB_URL", "sqlite+aiosqlite:///:memory:")
+
+_is_sqlite = _TEST_DB_URL.startswith("sqlite")
+
+# StaticPool keeps a single in-memory connection alive for the whole session
+# (required for SQLite :memory:).  PostgreSQL uses NullPool to avoid
+# "Future attached to a different loop" errors with pytest-asyncio.
+if _is_sqlite:
+    _test_engine = create_async_engine(
+        _TEST_DB_URL,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+else:
+    _test_engine = create_async_engine(_TEST_DB_URL, poolclass=NullPool)
+
 _TestSession = async_sessionmaker(_test_engine, expire_on_commit=False)
 
 

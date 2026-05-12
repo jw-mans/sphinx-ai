@@ -6,9 +6,7 @@ Use the exported counters/histograms in routers and services.
 """
 from prometheus_client import Counter, Histogram, Gauge
 
-# ---------------------------------------------------------------------------
 # Interview lifecycle
-# ---------------------------------------------------------------------------
 
 interviews_started = Counter(
     "sphinx_interviews_started_total",
@@ -38,9 +36,7 @@ average_score_gauge = Gauge(
     "Rolling average interview score (updated on result fetch)",
 )
 
-# ---------------------------------------------------------------------------
 # User satisfaction (NPS / CSAT / CES)
-# ---------------------------------------------------------------------------
 
 nps_scores = Counter(
     "sphinx_nps_total",
@@ -60,10 +56,8 @@ ces_scores = Counter(
     ["score"],
 )
 
-# ---------------------------------------------------------------------------
 # HTTP / infrastructure (supplementary — main HTTP metrics come from
 # prometheus-fastapi-instrumentator)
-# ---------------------------------------------------------------------------
 
 active_requests = Gauge(
     "sphinx_active_requests",

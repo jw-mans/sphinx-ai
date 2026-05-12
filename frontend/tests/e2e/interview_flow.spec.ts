@@ -17,9 +17,8 @@ import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:5173';
 
-// ---------------------------------------------------------------------------
 // Helper: skip Telegram SDK init (not available in browser outside Telegram)
-// ---------------------------------------------------------------------------
+
 async function injectAnonUser(page: Page) {
   await page.addInitScript(() => {
     const anonId = 'playwright_' + Math.random().toString(36).slice(2, 10);
@@ -29,22 +28,17 @@ async function injectAnonUser(page: Page) {
   });
 }
 
-// ---------------------------------------------------------------------------
 // Scenario 1: Home page renders key UI elements
-// ---------------------------------------------------------------------------
 test('home page: logo, heading and start form are visible', async ({ page }) => {
   await injectAnonUser(page);
   await page.goto(BASE_URL);
 
   await expect(page.getByRole('heading', { name: 'Sphinx' })).toBeVisible();
-  // Level selector or start button must be present
   const levelSelect = page.locator('select, [data-testid="level-select"]').first();
   await expect(levelSelect).toBeVisible();
 });
 
-// ---------------------------------------------------------------------------
 // Scenario 2: Selecting a level and stack enables the Start button
-// ---------------------------------------------------------------------------
 test('home page: start button activates after level + stack selection', async ({ page }) => {
   await injectAnonUser(page);
   await page.goto(BASE_URL);
@@ -66,9 +60,8 @@ test('home page: start button activates after level + stack selection', async ({
   await expect(startBtn).toBeEnabled();
 });
 
-// ---------------------------------------------------------------------------
 // Scenario 3: Starting an interview navigates to /interview/:id
-// ---------------------------------------------------------------------------
+
 test('start interview: navigates to interview page and shows first question', async ({ page }) => {
   await injectAnonUser(page);
   await page.goto(BASE_URL);
@@ -97,9 +90,8 @@ test('start interview: navigates to interview page and shows first question', as
   await expect(questionText).not.toBeEmpty({ timeout: 10_000 });
 });
 
-// ---------------------------------------------------------------------------
 // Scenario 4: Submitting an answer shows evaluation / feedback
-// ---------------------------------------------------------------------------
+
 test('interview page: typing and submitting an answer shows feedback', async ({ page }) => {
   await injectAnonUser(page);
   await page.goto(BASE_URL);
@@ -127,9 +119,8 @@ test('interview page: typing and submitting an answer shows feedback', async ({ 
   await expect(feedback).toBeVisible({ timeout: 15_000 });
 });
 
-// ---------------------------------------------------------------------------
 // Scenario 5: Navigation to result page shows summary
-// ---------------------------------------------------------------------------
+
 test('result page: navigating directly to /result shows average score', async ({ page }) => {
   await injectAnonUser(page);
   // We don't have a valid interview_id here, so mock the API call and
@@ -167,9 +158,7 @@ test('result page: navigating directly to /result shows average score', async ({
   await expect(score).toBeVisible({ timeout: 8_000 });
 });
 
-// ---------------------------------------------------------------------------
 // Scenario 6: 404 page for unknown routes
-// ---------------------------------------------------------------------------
 test('unknown route: app renders a fallback or redirects', async ({ page }) => {
   await page.goto(`${BASE_URL}/this-route-does-not-exist`);
   // App should either show a not-found message or redirect to /
