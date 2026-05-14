@@ -4,6 +4,7 @@ import { AuthPage } from './pages/AuthPage'
 import { HomePage } from './pages/HomePage'
 import { InterviewPage } from './pages/InterviewPage'
 import { ResultPage } from './pages/ResultPage'
+import { ProfilePage } from './pages/ProfilePage'
 
 export default function App() {
   const { token, user, loading, saveSession, logout } = useAuth()
@@ -26,6 +27,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage user={user} onLogout={logout} />} />
+      <Route path="/profile" element={<ProfilePage user={user} />} />
       <Route path="/interview/:interviewId" element={<InterviewPage />} />
       <Route path="/result/:interviewId" element={<ResultPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -9,6 +9,8 @@ class UserCreate(BaseModel):
 
 class UserUpdate(BaseModel):
     telegram_id: Optional[str] = None
+    name: Optional[str] = None
+    preferred_stack: Optional[str] = None
 
 
 class User(BaseModel):

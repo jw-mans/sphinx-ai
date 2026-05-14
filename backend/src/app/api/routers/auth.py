@@ -9,11 +9,12 @@ from src.app.db.crud.auth import (
     create_or_get_telegram_user,
     authenticate,
 )
-from src.app.db.crud.user import get_user
+from src.app.db.crud.user import get_user, update_user
+from src.app.schemas.user import UserUpdate
 from src.app.core.security import create_access_token, decode_token
 from src.app.schemas.auth import (
     RegisterRequest, LoginRequest, TelegramAuthRequest,
-    TokenResponse, UserOut,
+    TokenResponse, UserOut, UpdateProfileRequest,
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -56,3 +57,24 @@ async def me(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return UserOut.model_validate(user)
+
+
+@router.patch("/me", response_model=UserOut)
+async def update_me(
+    body: UpdateProfileRequest,
+    credentials: HTTPAuthorizationCredentials = Depends(bearer),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update current user's profile (name, preferred_stack)."""
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    user_id = decode_token(credentials.credentials)
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    updated = await update_user(
+        db, user_id,
+        UserUpdate(**body.model_dump(exclude_unset=True)),
+    )
+    if not updated:
+        raise HTTPException(status_code=404, detail="User not found")
+    return UserOut.model_validate(updated)

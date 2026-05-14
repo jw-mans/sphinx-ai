@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from src.app.db.session import get_db
 from src.app.db.crud.interview import get_interview
@@ -27,6 +27,40 @@ async def _require_interview_owner(
     if interview.user_id != current_user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     return interview
+
+# ---------------------------------------------------------------------------
+# Analytics endpoints (must be before /{interview_id}/... to avoid conflicts)
+# ---------------------------------------------------------------------------
+
+@router.get("/history")
+async def get_interview_history(
+    db: AsyncSession = Depends(get_db),
+    service: InterviewService = Depends(get_interview_service_v2),
+    current_user_id: int = Depends(get_current_user_id),
+) -> List[Dict[str, Any]]:
+    """
+    Returns all past interviews for the authenticated user (newest first).
+    Each item includes interview_id, level, stack, status,
+    questions_count, average_score, created_at.
+    """
+    return await service.get_user_history(db, current_user_id)
+
+
+@router.get("/competency")
+async def get_competency_profile(
+    db: AsyncSession = Depends(get_db),
+    service: InterviewService = Depends(get_interview_service_v2),
+    current_user_id: int = Depends(get_current_user_id),
+) -> Dict[str, Any]:
+    """
+    Returns aggregated competency data across all user interviews:
+    - dimensions: {correctness, optimality, complexity, explanation, gaps} — for radar chart
+    - interviews_count: total number of interviews
+    - evaluated_answers: total answered questions
+    - weak_topics: top 5 recurring weak topics
+    """
+    return await service.get_competency_profile(db, current_user_id)
+
 
 """
 V1 ENDPOINTS

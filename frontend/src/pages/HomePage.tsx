@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { InterviewStart } from '../components/InterviewStart'
 import { startInterview } from '../api/interview'
 import type { UserOut } from '../api/auth'
@@ -61,13 +61,21 @@ export function HomePage({ user, onLogout }: Props) {
           </div>
         )}
 
-        {/* Logout */}
-        <button
-          onClick={onLogout}
-          className="mt-6 w-full text-center text-xs text-slate-600 hover:text-slate-400 transition-colors"
-        >
-          Выйти из аккаунта
-        </button>
+        {/* Profile & Logout */}
+        <div className="mt-6 flex items-center justify-between">
+          <Link
+            to="/profile"
+            className="text-xs text-slate-500 hover:text-indigo-400 transition-colors"
+          >
+            Мой профиль и история
+          </Link>
+          <button
+            onClick={onLogout}
+            className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
+          >
+            Выйти
+          </button>
+        </div>
       </div>
     </div>
   )

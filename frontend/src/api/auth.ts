@@ -5,6 +5,7 @@ export interface UserOut {
   email?: string
   name?: string
   telegram_id?: string
+  preferred_stack?: string
   created_at: string
 }
 

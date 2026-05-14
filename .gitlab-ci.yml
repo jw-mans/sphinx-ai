@@ -4,7 +4,6 @@ stages:
   - build
   - deploy
 
-# ---------------------------------------------------------------------------
 # Global variables
 # CI variables to set in GitLab → Settings → CI/CD → Variables:
 #   DEPLOY_SSH_KEY      — private SSH key for the production server
@@ -14,24 +13,23 @@ stages:
 #   DEPLOY_PATH         — absolute path to the project on the server
 #   VITE_API_URL        — public URL the browser uses to reach the backend API
 #   FRONTEND_URL        — public URL of the frontend (used for environment link)
-# ---------------------------------------------------------------------------
 
 variables:
-  # ── Test database (used by GitLab CI postgres service) ──
+  # Test database (used by GitLab CI postgres service) 
   DB_HOST: postgres
   DB_PORT: "5432"
   DB_USER: sphinx_user
   DB_PASSWORD: sphinx_pass
   DB_NAME: sphinx_test
 
-  # ── Stub values to satisfy pydantic-settings during tests ──
+  # Stub values to satisfy pydantic-settings during tests
   YANDEX_API_KEY: test_key
   YANDEX_API_KEY_ID: test_key_id
   YANDEX_API_MODEL_URI: "gpt://test_catalog/yandexgpt-lite"
   YANDEX_CLOUD_CATALOG_ID: test_catalog_id
   BOT_TOKEN: ""
 
-  # ── Docker ──
+  # Docker
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
   IMAGE_BACKEND: $CI_REGISTRY_IMAGE/backend

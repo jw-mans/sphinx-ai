@@ -24,9 +24,15 @@ class UserOut(BaseModel):
     email: Optional[str] = None
     name: Optional[str] = None
     telegram_id: Optional[str] = None
+    preferred_stack: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class UpdateProfileRequest(BaseModel):
+    name: Optional[str] = None
+    preferred_stack: Optional[str] = None
 
 
 class TokenResponse(BaseModel):

@@ -32,11 +32,18 @@ async def lifespan(app: FastAPI):
         import asyncio
         from aiogram import Bot
         from src.app.bot import build_dispatcher
-        bot = Bot(token=settings.BOT_TOKEN)
-        dp = build_dispatcher(settings.WEBAPP_URL)
-        await bot.delete_webhook(drop_pending_updates=True)
-        polling_task = asyncio.create_task(dp.start_polling(bot))
-        logger.info("Telegram bot started")
+        try:
+            bot = Bot(token=settings.BOT_TOKEN)
+            dp = build_dispatcher(settings.WEBAPP_URL)
+            await bot.delete_webhook(drop_pending_updates=True)
+            polling_task = asyncio.create_task(dp.start_polling(bot))
+            logger.info("Telegram bot started")
+        except Exception as e:
+            logger.warning(f"Telegram bot failed to start (network unreachable?): {e}. API continues without bot.")
+            if bot:
+                await bot.session.close()
+            bot = None
+            polling_task = None
     else:
         logger.info("BOT_TOKEN or WEBAPP_URL not set — Telegram bot disabled")
 

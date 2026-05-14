@@ -49,11 +49,21 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+junit.xml
+*.junit.xml
 *.cover
 *.py,cover
 .hypothesis/
 .pytest_cache/
 cover/
+
+# Load test output (Locust)
+load_results*.csv
+load_results*.log
+
+# Playwright test artifacts
+playwright-report/
+test-results/
 
 # MyPy
 .mypy_cache/

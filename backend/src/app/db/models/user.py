@@ -13,6 +13,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=True)         # Web users
     hashed_password = Column(String, nullable=True)                        # Web users
     name = Column(String, nullable=True)                                   # display name
+    preferred_stack = Column(String, nullable=True)                        # e.g. "python, javascript"
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     interviews = relationship("Interview", back_populates="user")

@@ -1,6 +1,8 @@
+import { getStoredToken } from '../hooks/useAuth'
+
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
-// Types
+// ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface User {
   id: number
@@ -60,11 +62,31 @@ export interface InterviewResult {
   summary: SessionSummary | null
 }
 
-// API calls
+export interface InterviewHistoryItem {
+  interview_id: number
+  level: string
+  stack: string
+  created_at: string
+  status: string
+  questions_count: number
+  average_score: number | null
+}
+
+export interface CompetencyProfile {
+  dimensions: Score
+  interviews_count: number
+  evaluated_answers: number
+  weak_topics: string[]
+}
+
+// ─── HTTP helper ─────────────────────────────────────────────────────────────
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getStoredToken()
+  const authHeader = token ? { Authorization: `Bearer ${token}` } : {}
+
   const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeader },
     ...init,
   })
   if (!res.ok) {
@@ -73,6 +95,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
   return res.json()
 }
+
+// ─── API calls ───────────────────────────────────────────────────────────────
 
 export const createUser = (telegramId: string) =>
   request<User>('/users', {
@@ -86,23 +110,22 @@ export const startInterview = (userId: number, level: string, stack: string, use
     body: JSON.stringify({ user_id: userId, level, stack, user_notes: userNotes }),
   })
 
-// export const getCurrentQuestion = (interviewId: number) =>
-//   request<Question | { message: string }>(`/interview/${interviewId}/question`)
 export const getCurrentQuestion = (interviewId: number) =>
   request<Question | { message: string }>(`/interview/${interviewId}/question/v2`)
 
-// export const submitAnswer = (interviewId: number, text: string, code?: string) =>
-//   request<SubmitAnswerResponse>(`/interview/${interviewId}/answer`, {
-//     method: 'POST',
-//     body: JSON.stringify({ text, code: code || undefined }),
-//   })
 export const submitAnswer = (interviewId: number, text: string, code?: string) =>
   request<SubmitAnswerResponse>(`/interview/${interviewId}/answer/v2`, {
     method: 'POST',
     body: JSON.stringify({ text, code: code || undefined }),
   })
 
-// export const getInterviewResult = (interviewId: number) =>
-//   request<InterviewResult>(`/interview/${interviewId}/result`)
 export const getInterviewResult = (interviewId: number) =>
   request<InterviewResult>(`/interview/${interviewId}/result/v2`)
+
+/** Full mock-interview history for the current user (newest first). */
+export const getInterviewHistory = () =>
+  request<InterviewHistoryItem[]>('/interview/history')
+
+/** Aggregated competency radar data across all past interviews. */
+export const getCompetencyProfile = () =>
+  request<CompetencyProfile>('/interview/competency')
